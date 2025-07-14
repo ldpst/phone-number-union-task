@@ -29,45 +29,54 @@ public class Main {
             }
         }
 
-        DSU dsu = new DSU(validRows.size());
+        List<List<Long>> data = new ArrayList<>();
+        for (String[] row : validRows) {
+            data.add(ConversionUtils.ArrayToLong(row));
+        }
 
-        List<List<String>> groups = getGroups(dsu, validRows);
+        DSU dsu = new DSU(data.size());
+
+        List<List<List<Long>>> groups = getGroups(dsu, data);
         long size = groups.stream().filter(group -> group.size() > 1).count();
         System.out.println("Number of groups whose size is greater than 1: " + size);
         for (int i = 0; i < groups.size(); i++) {
-            List<String> group = groups.get(i);
+            List<List<Long>> group = groups.get(i);
             if (group.size() > 1) {
                 System.out.println("Group №" + (i + 1) + ". Size:" + group.size());
-                for (String line : group) {
-                    System.out.println("\t" + line);
+                for (List<Long> line : group) {
+                    System.out.print("\t" + "\"" + line.get(0) + "\"");
+                    for (int j = 1; j < line.size(); j++) {
+                        System.out.print(";" + (line.get(j) == null ? "\"\"" : "\"" + line.get(j) + "\""));
+                    }
+                    System.out.println();
                 }
             }
         }
     }
 
-    private static List<List<String>> getGroups(DSU dsu, List<String[]> validRows) {
-        makeUnions(dsu, validRows);
+    private static List<List<List<Long>>> getGroups(DSU dsu, List<List<Long>> data) {
+        makeUnions(dsu, data);
 
-        Map<Integer, List<String>> result = new HashMap<>();
-        for (int i = 0; i < validRows.size(); i++) {
+        Map<Integer, List<List<Long>>> result = new HashMap<>();
+        for (int i = 0; i < data.size(); i++) {
             int root = dsu.find(i);
-            result.computeIfAbsent(root, k -> new ArrayList<>()).add(String.join(";", validRows.get(i)));
+            result.computeIfAbsent(root, k -> new ArrayList<>()).add(data.get(i));
         }
 
-        List<List<String>> groups = new ArrayList<>(result.values());
+        List<List<List<Long>>> groups = new ArrayList<>(result.values());
         groups.sort((g1, g2) -> Integer.compare(g2.size(), g1.size()));
 
         return groups;
     }
 
-    private static void makeUnions(DSU dsu, List<String[]> validRows) {
+    private static void makeUnions(DSU dsu, List<List<Long>> data) {
         Map<KeyPair, List<Integer>> unions = new HashMap<>(); // Размер массива = 1000000. Можно обойтись без Long
 
-        for (int row = 0; row < validRows.size(); row++) {
-            String[] parts = validRows.get(row);
-            for (int col = 0; col < parts.length; col++) {
-                String value = parts[col];
-                if (!value.isEmpty()) {
+        for (int row = 0; row < data.size(); row++) {
+            List<Long> parts = data.get(row);
+            for (int col = 0; col < parts.size(); col++) {
+                Long value = parts.get(col);
+                if (value != null) {
                     KeyPair key = new KeyPair(col, value);
                     if (unions.containsKey(key)) {
                         for (Integer unionElement : unions.get(key)) {
