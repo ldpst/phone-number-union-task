@@ -7,17 +7,15 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class DataLoader {
-    private final String filepath;
-    public DataLoader(String filepath) {
-        this.filepath = filepath;
-    }
-
-    public void load() throws IOException {
+    /**
+     * Считывает строки из файла по пути
+     *
+     * @param filepath путь
+     * @return считанные строки
+     * @throws IOException отсутствие файла по заданному пути
+     */
+    public static List<String> loadFrom(String filepath) throws IOException {
         Path path = Paths.get(filepath);
-        List<String> lines = Files.readAllLines(path);
-        for (String line : lines) {
-            String[] parts = line.split(";");
-
-        }
+        return Files.readAllLines(path);
     }
 }
