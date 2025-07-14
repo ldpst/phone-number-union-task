@@ -5,9 +5,11 @@ package com.ldpst;
  */
 public class DSU {
     private final int[] parent;
+    private final int[] rank;
 
     public DSU(int n) {
         parent = new int[n];
+        rank = new int[n];
         for (int i = 0; i < n; i++) parent[i] = i;
     }
 
@@ -33,6 +35,14 @@ public class DSU {
     public void union(int a, int b) {
         int ra = find(a);
         int rb = find(b);
-        if (ra != rb) parent[ra] = rb; // объединение множеств
+        if (ra == rb) return;
+        if (rank[ra] < rank[rb]) {
+            parent[ra] = rb;
+        } else if (rank[ra] > rank[rb]) {
+            parent[rb] = ra;
+        } else {
+            parent[rb] = ra;
+            rank[ra]++;
+        }
     }
 }
