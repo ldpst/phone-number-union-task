@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Класс для заполнения системы непересекающихся множеств (dsu)
@@ -51,15 +52,14 @@ public class Grouper {
      * @return разделение строк на группы
      */
     private List<List<String>> buildGroups(List<String[]> data) {
-        Map<Integer, List<String>> result = new HashMap<>();
+        Map<Integer, List<String>> grouped = new HashMap<>();
         for (int i = 0; i < data.size(); i++) {
             int root = dsu.find(i);
-            result.computeIfAbsent(root, k -> new ArrayList<>()).add(String.join(";", data.get(i)));
+            grouped.computeIfAbsent(root, k -> new ArrayList<>())
+                    .add(String.join(";", data.get(i)));
         }
-
-        List<List<String>> groups = new ArrayList<>(result.values());
-        groups.sort((g1, g2) -> Integer.compare(g2.size(), g1.size()));
-
-        return groups;
+        return grouped.values().stream()
+                .sorted((a, b) -> Integer.compare(b.size(), a.size()))
+                .collect(Collectors.toList());
     }
 }
