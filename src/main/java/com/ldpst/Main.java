@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Основной класс запуска
@@ -17,9 +19,9 @@ public class Main {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 
-        List<String> lines = readLinesFromArgs(args);
+        Stream<String> lineStream = getInputStreamFromArgs(args);
 
-        List<String[]> validRows = validateRows(lines);
+        List<String[]> validRows = validateRows(lineStream);
 
         DSU dsu = new DSU(validRows.size());
 
@@ -32,44 +34,39 @@ public class Main {
     }
 
     /**
-     * Проверяет, есть ли в аргументах запуска путь к файлу и считывает из него значение
+     * Проверяет, есть ли в аргументах запуска путь к файлу и получает его поток ввода
      *
      * @param args аргументы запуска
-     * @return считанный массив строк
+     * @return поток ввода
      */
-    private static List<String> readLinesFromArgs(String[] args) {
+    private static Stream<String> getInputStreamFromArgs(String[] args) {
         if (args.length < 1) {
             System.out.println("Add absolute path to input file");
             System.exit(0);
         }
 
         String filepath = args[0].trim();
-        List<String> lines = new ArrayList<>();
+        Stream<String> lineStream = null;
         try {
-            lines = DataLoader.loadFrom(filepath);
+            lineStream = DataStream.streamFrom(filepath);
         } catch (IOException e) {
             System.out.println("File not found");
             System.exit(0);
         }
-        return lines;
+        return lineStream;
     }
 
     /**
-     * Валидирует массив строк, разделяя каждую строку по ';'. Если любая часть строки не валидна - строка пропускается
+     * Считывает и валидирует массив строк, разделяя каждую строку по ';'. Если любая часть строки не валидна - строка пропускается
      *
-     * @param rows массив строк для валидации
+     * @param lineStream поток ввода
      * @return валидные данные
      */
-    private static List<String[]> validateRows(List<String> rows) {
-        List<String[]> validRows = new ArrayList<>();   // чтобы в будущем лишний раз не использовать split
-        // принимает String[]
-        for (String line : rows) {
-            String[] parts = line.split(";");
-            if (ValidationUtils.validateArrayOfStr(parts)) {
-                validRows.add(parts);
-            }
-        }
-        return validRows;
+    private static List<String[]> validateRows(Stream<String> lineStream) {
+        return lineStream
+                .map(line -> line.split(";"))
+                .filter(ValidationUtils::validateArrayOfStr)
+                .collect(Collectors.toList());
     }
 
     /**
