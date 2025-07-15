@@ -1,12 +1,7 @@
 package com.ldpst;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,10 +12,10 @@ public class Main {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
         List<String[]> validRows = loadAndValidateRows(args);
+
         DSU dsu = new DSU(validRows.size());
-
-        List<List<String>> groups = getGroups(dsu, validRows);
-
+        Grouper grouper = new Grouper(dsu);
+        List<List<String>> groups = grouper.getGroups(validRows);
         printGroups(groups);
 
         String runTime = System.currentTimeMillis() - startTime + "ms";
@@ -78,52 +73,5 @@ public class Main {
         }
     }
 
-    /**
-     * Метод, разделяющий набор строк на группы
-     *
-     * @param dsu  система непересекающихся множеств
-     * @param data набор строк
-     * @return разделение строк на группы
-     */
-    private static List<List<String>> getGroups(DSU dsu, List<String[]> data) {
-        makeUnions(dsu, data);
 
-        Map<Integer, List<String>> result = new HashMap<>();
-        for (int i = 0; i < data.size(); i++) {
-            int root = dsu.find(i);
-            result.computeIfAbsent(root, k -> new ArrayList<>()).add(String.join(";", data.get(i)));
-        }
-
-        List<List<String>> groups = new ArrayList<>(result.values());
-        groups.sort((g1, g2) -> Integer.compare(g2.size(), g1.size()));
-
-        return groups;
-    }
-
-    /**
-     * Метод, объединяющий строки в группы, заполняя дерево в dsu
-     *
-     * @param dsu  система непересекающихся множеств, которая будет заполнена
-     * @param data набор строк для объединения
-     */
-    private static void makeUnions(DSU dsu, List<String[]> data) {
-        Object2IntOpenHashMap<KeyPair> representativeMap = new Object2IntOpenHashMap<>();
-        representativeMap.defaultReturnValue(-1);
-
-        for (int row = 0; row < data.size(); row++) {
-            String[] parts = data.get(row);
-            for (int col = 0; col < parts.length; col++) {
-                String value = parts[col];
-                if (!value.equals("\"\"")) {
-                    KeyPair key = new KeyPair(col, value.intern());
-                    int rep = representativeMap.getInt(key);
-                    if (rep == -1) {
-                        representativeMap.put(key, row);
-                    } else {
-                        dsu.union(row, rep);
-                    }
-                }
-            }
-        }
-    }
 }
