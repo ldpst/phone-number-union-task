@@ -16,11 +16,7 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
-
-        Stream<String> lineStream = getInputStreamFromArgs(args);
-
-        List<String[]> validRows = validateRows(lineStream);
-
+        List<String[]> validRows = loadAndValidateRows(args);
         DSU dsu = new DSU(validRows.size());
 
         List<List<String>> groups = getGroups(dsu, validRows);
@@ -40,27 +36,25 @@ public class Main {
     private static Stream<String> getInputStreamFromArgs(String[] args) {
         if (args.length < 1) {
             System.out.println("Add absolute path to input file");
-            System.exit(0);
+            System.exit(1);
         }
-
-        String filepath = args[0].trim();
-        Stream<String> lineStream = null;
         try {
-            lineStream = DataStream.streamFrom(filepath);
+            return DataStream.streamFrom(args[0].trim());
         } catch (IOException e) {
-            System.out.println("File not found");
-            System.exit(0);
+            System.out.println("Cant open file: " + e.getMessage());
+            System.exit(1);
         }
-        return lineStream;
+        return Stream.empty();
     }
 
     /**
-     * Считывает и валидирует массив строк, разделяя каждую строку по ';'. Если любая часть строки не валидна - строка пропускается
+     * Считывает и валидирует массив строк из файла, разделяя каждую строку по ';'. Если любая часть строки не валидна - строка пропускается
      *
-     * @param lineStream поток ввода
+     * @param args аргументы запуска программы
      * @return валидные данные
      */
-    private static List<String[]> validateRows(Stream<String> lineStream) {
+    private static List<String[]> loadAndValidateRows(String[] args) {
+        Stream<String> lineStream = getInputStreamFromArgs(args);
         return lineStream
                 .map(line -> line.split(";"))
                 .filter(ValidationUtils::validateArrayOfStr)
@@ -109,7 +103,7 @@ public class Main {
     /**
      * Метод, объединяющий строки в группы, заполняя дерево в dsu
      *
-     * @param dsu система непересекающихся множеств, которая будет заполнена
+     * @param dsu  система непересекающихся множеств, которая будет заполнена
      * @param data набор строк для объединения
      */
     private static void makeUnions(DSU dsu, List<String[]> data) {
