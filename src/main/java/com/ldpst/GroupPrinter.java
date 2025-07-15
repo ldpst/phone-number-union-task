@@ -17,7 +17,7 @@ public class GroupPrinter {
         int index = 1;
         for (List<String> group : groups) {
             if (group.size() > 1) {
-                System.out.println("Group №" + (index + 1) + ". Size:" + group.size());
+                System.out.println("Group №" + (index++) + ". Size:" + group.size());
                 group.forEach(s -> System.out.println("\t" + s));
             }
         }
