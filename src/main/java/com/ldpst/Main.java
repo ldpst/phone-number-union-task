@@ -1,5 +1,9 @@
 package com.ldpst;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +118,7 @@ public class Main {
      * @param data набор строк для объединения
      */
     private static void makeUnions(DSU dsu, List<String[]> data) {
-        Map<KeyPair, List<Integer>> unions = new HashMap<>();
+        Object2ObjectOpenHashMap<KeyPair, IntList> unions = new Object2ObjectOpenHashMap<>();
 
         for (int row = 0; row < data.size(); row++) {
             String[] parts = data.get(row);
@@ -128,12 +132,13 @@ public class Main {
                         }
                         unions.get(key).add(row);
                     } else {
-                        List<Integer> list = new ArrayList<>();
+                        IntList list = new IntArrayList();
                         list.add(row);
                         unions.put(key, list);
                     }
                 }
             }
         }
+        unions.clear();
     }
 }
