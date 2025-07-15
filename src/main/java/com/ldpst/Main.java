@@ -16,7 +16,7 @@ public class Main {
         DSU dsu = new DSU(validRows.size());
         Grouper grouper = new Grouper(dsu);
         List<List<String>> groups = grouper.getGroups(validRows);
-        printGroups(groups);
+        GroupPrinter.printGroups(groups);
 
         String runTime = System.currentTimeMillis() - startTime + "ms";
         System.out.println("Program ended in " + runTime);
@@ -55,23 +55,4 @@ public class Main {
                 .filter(ValidationUtils::validateArrayOfStr)
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Метод, выводящий в поток системного вывода значения строк, разделенные по группам
-     *
-     * @param groups строки, разделенные по группам
-     */
-    private static void printGroups(List<List<String>> groups) {
-        long size = groups.stream().filter(group -> group.size() > 1).count();
-        System.out.println("Number of groups whose size is greater than 1: " + size);
-        for (int i = 0; i < groups.size(); i++) {
-            List<String> group = groups.get(i);
-            if (group.size() > 1) {
-                System.out.println("Group №" + (i + 1) + ". Size:" + group.size());
-                System.out.println("\t" + String.join("\n\t", group));
-            }
-        }
-    }
-
-
 }
