@@ -1,8 +1,6 @@
 package com.ldpst;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,27 +113,23 @@ public class Main {
      * @param data набор строк для объединения
      */
     private static void makeUnions(DSU dsu, List<String[]> data) {
-        Object2ObjectOpenHashMap<KeyPair, IntList> unions = new Object2ObjectOpenHashMap<>();
+        Object2IntOpenHashMap<KeyPair> representativeMap = new Object2IntOpenHashMap<>();
+        representativeMap.defaultReturnValue(-1);
 
         for (int row = 0; row < data.size(); row++) {
             String[] parts = data.get(row);
             for (int col = 0; col < parts.length; col++) {
                 String value = parts[col];
                 if (!value.equals("\"\"")) {
-                    KeyPair key = new KeyPair(col, value);
-                    if (unions.containsKey(key)) {
-                        for (Integer unionElement : unions.get(key)) {
-                            dsu.union(row, unionElement);
-                        }
-                        unions.get(key).add(row);
+                    KeyPair key = new KeyPair(col, value.intern());
+                    int rep = representativeMap.getInt(key);
+                    if (rep == -1) {
+                        representativeMap.put(key, row);
                     } else {
-                        IntList list = new IntArrayList();
-                        list.add(row);
-                        unions.put(key, list);
+                        dsu.union(row, rep);
                     }
                 }
             }
         }
-        unions.clear();
     }
 }
