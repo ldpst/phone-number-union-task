@@ -1,9 +1,23 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'com.ldpst'
 version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'com.ldpst.Main'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass.get()
+        )
+    }
+}
+
 
 repositories {
     mavenCentral()
