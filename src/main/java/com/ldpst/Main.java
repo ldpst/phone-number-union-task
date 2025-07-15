@@ -10,6 +10,21 @@ public class Main {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 
+        List<String> lines = readLinesFromArgs(args);
+
+        List<String[]> validRows = validateRows(lines);
+
+        DSU dsu = new DSU(validRows.size());
+
+        List<List<String>> groups = getGroups(dsu, validRows);
+
+        printGroups(groups);
+
+        String runTime = System.currentTimeMillis() - startTime + "ms";
+        System.out.println("Program ended in " + runTime);
+    }
+
+    private static List<String> readLinesFromArgs(String[] args) {
         if (args.length < 1) {
             System.out.println("Add absolute path to input file");
             System.exit(0);
@@ -23,18 +38,21 @@ public class Main {
             System.out.println("File not found");
             System.exit(0);
         }
+        return lines;
+    }
 
+    private static List<String[]> validateRows(List<String> rows) {
         List<String[]> validRows = new ArrayList<>();
-        for (String line : lines) {
+        for (String line : rows) {
             String[] parts = line.split(";");
             if (ValidationUtils.validateArrayOfStr(parts)) {
                 validRows.add(parts);
             }
         }
+        return validRows;
+    }
 
-        DSU dsu = new DSU(validRows.size());
-
-        List<List<String>> groups = getGroups(dsu, validRows);
+    private static void printGroups(List<List<String>> groups) {
         long size = groups.stream().filter(group -> group.size() > 1).count();
         System.out.println("Number of groups whose size is greater than 1: " + size);
         for (int i = 0; i < groups.size(); i++) {
@@ -44,8 +62,6 @@ public class Main {
                 System.out.println("\t" + String.join("\n\t", group));
             }
         }
-        String runTime = System.currentTimeMillis() - startTime + "ms";
-        System.out.println("Program ended in " + runTime);
     }
 
     private static List<List<String>> getGroups(DSU dsu, List<String[]> data) {
@@ -64,7 +80,7 @@ public class Main {
     }
 
     private static void makeUnions(DSU dsu, List<String[]> data) {
-        Map<KeyPair, List<Integer>> unions = new HashMap<>(); // Размер массива = 1000000. Можно обойтись без Long
+        Map<KeyPair, List<Integer>> unions = new HashMap<>();
 
         for (int row = 0; row < data.size(); row++) {
             String[] parts = data.get(row);
