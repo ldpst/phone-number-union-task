@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Основной класс запуска
+ */
 public class Main {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
@@ -24,6 +27,12 @@ public class Main {
         System.out.println("Program ended in " + runTime);
     }
 
+    /**
+     * Проверяет, есть ли в аргументах запуска путь к файлу и считывает из него значение
+     *
+     * @param args аргументы запуска
+     * @return считанный массив строк
+     */
     private static List<String> readLinesFromArgs(String[] args) {
         if (args.length < 1) {
             System.out.println("Add absolute path to input file");
@@ -41,8 +50,15 @@ public class Main {
         return lines;
     }
 
+    /**
+     * Валидирует массив строк, разделяя каждую строку по ';'. Если любая часть строки не валидна - строка пропускается
+     *
+     * @param rows массив строк для валидации
+     * @return валидные данные
+     */
     private static List<String[]> validateRows(List<String> rows) {
-        List<String[]> validRows = new ArrayList<>();
+        List<String[]> validRows = new ArrayList<>();   // чтобы в будущем лишний раз не использовать split
+        // принимает String[]
         for (String line : rows) {
             String[] parts = line.split(";");
             if (ValidationUtils.validateArrayOfStr(parts)) {
@@ -52,6 +68,11 @@ public class Main {
         return validRows;
     }
 
+    /**
+     * Метод, выводящий в поток системного вывода значения строк, разделенные по группам
+     *
+     * @param groups строки, разделенные по группам
+     */
     private static void printGroups(List<List<String>> groups) {
         long size = groups.stream().filter(group -> group.size() > 1).count();
         System.out.println("Number of groups whose size is greater than 1: " + size);
@@ -64,6 +85,13 @@ public class Main {
         }
     }
 
+    /**
+     * Метод, разделяющий набор строк на группы
+     *
+     * @param dsu  система непересекающихся множеств
+     * @param data набор строк
+     * @return разделение строк на группы
+     */
     private static List<List<String>> getGroups(DSU dsu, List<String[]> data) {
         makeUnions(dsu, data);
 
@@ -79,6 +107,12 @@ public class Main {
         return groups;
     }
 
+    /**
+     * Метод, объединяющий строки в группы, заполняя дерево в dsu
+     *
+     * @param dsu система непересекающихся множеств, которая будет заполнена
+     * @param data набор строк для объединения
+     */
     private static void makeUnions(DSU dsu, List<String[]> data) {
         Map<KeyPair, List<Integer>> unions = new HashMap<>();
 

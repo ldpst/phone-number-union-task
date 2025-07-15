@@ -6,6 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Класс, содержащий методы для считывания данных из файла
+ */
 public class DataLoader {
     /**
      * Считывает строки из файла по пути
