@@ -1,2 +1,4 @@
 rootProject.name = 'lng-task'
+include 'StringPresentation'
+include 'StringPresentation'
 
