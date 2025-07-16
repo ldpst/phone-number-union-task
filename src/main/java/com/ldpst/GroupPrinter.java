@@ -21,7 +21,7 @@ public class GroupPrinter {
                 .toList();
 
         try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("D:\\Files\\Projects\\java\\lng-task\\input.txt"))));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.txt")));
             bw.write("Number of groups whose size is greater than 1: " + groupList.size() + "\n");
             int index = 1;
             for (List<Integer> group : groupList) {
