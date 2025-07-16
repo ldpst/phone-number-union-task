@@ -22,8 +22,9 @@ public class Grouper {
      * Метод, объединяющий строки в группы, заполняя дерево в dsu
      *
      * @param data набор строк для объединения
+     * @return индексы строк, разделенные по группам
      */
-    public List<List<String>> getGroups(List<String[]> data) {
+    public Map<Integer, List<Integer>> getGroups(List<String[]> data) {
         Object2IntOpenHashMap<KeyPair> representativeMap = new Object2IntOpenHashMap<>();
         representativeMap.defaultReturnValue(-1);
 
@@ -49,17 +50,14 @@ public class Grouper {
      * Метод, разделяющий набор строк на группы
      *
      * @param data набор строк
-     * @return разделение строк на группы
+     * @return индексы строк, разделенные по группам
      */
-    private List<List<String>> buildGroups(List<String[]> data) {
-        Map<Integer, List<String>> grouped = new HashMap<>();
+    private Map<Integer, List<Integer>> buildGroups(List<String[]> data) {
+        Map<Integer, List<Integer>> grouped = new HashMap<>();
         for (int i = 0; i < data.size(); i++) {
             int root = dsu.find(i);
-            grouped.computeIfAbsent(root, k -> new ArrayList<>())
-                    .add(String.join(";", data.get(i)));
+            grouped.computeIfAbsent(root, k -> new ArrayList<>()).add(i);
         }
-        return grouped.values().stream()
-                .sorted((a, b) -> Integer.compare(b.size(), a.size()))
-                .collect(Collectors.toList());
+        return grouped;
     }
 }

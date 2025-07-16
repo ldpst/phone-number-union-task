@@ -2,6 +2,7 @@ package com.ldpst;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,8 +16,10 @@ public class Main {
 
         DSU dsu = new DSU(validRows.size());
         Grouper grouper = new Grouper(dsu);
-        List<List<String>> groups = grouper.getGroups(validRows);
-        GroupPrinter.printGroups(groups);
+        Map<Integer, List<Integer>> groups = grouper.getGroups(validRows);
+
+        System.out.println("Groups were found in " + (System.currentTimeMillis() - startTime) + "ms");
+        GroupPrinter.printGroups(groups, validRows);
 
         String runTime = System.currentTimeMillis() - startTime + "ms";
         System.out.println("Program ended in " + runTime);
