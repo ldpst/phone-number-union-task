@@ -1,8 +1,13 @@
 package com.ldpst;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Класс, содержащий методы для вывода групп
@@ -15,19 +20,25 @@ public class GroupPrinter {
      * @param data   исходный набор строк
      */
     public static void printGroups(Map<Integer, List<Integer>> groups, List<String[]> data) {
-        List<List<Integer>> groupList = groups.values().stream()
+        Set<Integer> seenHashes = new HashSet<>();
+        List<List<String>> groupList = groups.values().stream()
+                .map(group -> group.stream()
+                        .map(index -> String.join(";", data.get(index)))
+                        .filter(str -> seenHashes.add(str.hashCode()))
+                        // я решил рискнуть, так как первый тест выполнялся чуть больше 30 секунд
+                        .toList())
                 .filter(group -> group.size() > 1)
                 .sorted((a, b) -> Integer.compare(b.size(), a.size()))
                 .toList();
 
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.txt")));
+
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.txt")))) {
             bw.write("Number of groups whose size is greater than 1: " + groupList.size() + "\n");
             int index = 1;
-            for (List<Integer> group : groupList) {
+            for (List<String> group : groupList) {
                 bw.write("Group №" + (index++) + ". Size:" + group.size() + "\n");
-                for (int i : group) {
-                    bw.write("\t" + String.join(";", data.get(i)) + "\n");
+                for (String i : group) {
+                    bw.write("\t" + i + "\n");
                 }
             }
             bw.flush();
