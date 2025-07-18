@@ -30,6 +30,7 @@ public class GroupPrinter {
                     bw.write("\t" + String.join(";", data.get(i)) + "\n");
                 }
             }
+            bw.flush();
         } catch (IOException e) {
             System.out.println("Couldn't write to output file");
             System.exit(1);
